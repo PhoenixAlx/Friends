@@ -1,12 +1,11 @@
-library(xml2)
-library(rvest)
-library(dplyr)
-library(syuzhet)
-library(readr)
-library(stringr)
-library(ggplot2)
-library(viridis)
-library(reshape2)
+
+
+requiredPackages = c('xml2','rvest','dplyr','syuzhet','readr','stringr','ggplot2','viridis','reshape2')
+for(p in requiredPackages){
+  if(!require(p,character.only = TRUE)) install.packages(p,repos="http://cran.rstudio.com/")
+  library(p,character.only = TRUE)
+}
+
 
 # Pintar sentimiento de cada episodio
 
@@ -156,89 +155,170 @@ pintar_joy_temp <- function(df_nrc, episodiolimpio, nombre_episodio) {
                  arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
   return(episodio_sentiment)
 }
+#calculate entropy normalizate shannon for all sentiment
+entropySent <- function(x) {
+  
+  totalSum<-rowSums(x)
+  probi<-x/totalSum
+  logpi<-log(probi)
+  Hlocal<- (-probi*logpi)
+  
+  result <- rowSums(Hlocal/log(length(x)),na.rm = TRUE)
+  return(result)
+}
 
 # Primera temporada
 
 ## Sentimiento de cada episodio
 
-s01e01 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0101.html")
-s01e02 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0102.html")
-s01e03 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0103.html")
-s01e04 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0104.html")
-s01e05 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0105.html")
-s01e06 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0106.html")
-s01e07 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0107.html")
-s01e08 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0108.html")
-s01e09 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0109.html")
-s01e10 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0110.html")
-s01e11 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0111.html")
-s01e12 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0112.html")
-s01e13 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0113.html")
-s01e14 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0114.html")
-s01e15 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0115.html")
-s01e16 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0116.html")
-s01e17 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0117.html")
-s01e18 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0118.html")
-s01e19 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0119.html")
-s01e20 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0120.html")
-s01e21 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0121.html")
-s01e22 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0122.html")
-s01e23 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0123.html")
-s01e24 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0124.html")
+s01e01 <- analizar_ep("Transcripts/0101.html")
+s01e02 <- analizar_ep("Transcripts/0102.html")
+s01e03 <- analizar_ep("Transcripts/0103.html")
+s01e04 <- analizar_ep("Transcripts/0104.html")
+s01e05 <- analizar_ep("Transcripts/0105.html")
+s01e06 <- analizar_ep("Transcripts/0106.html")
+s01e07 <- analizar_ep("Transcripts/0107.html")
+s01e08 <- analizar_ep("Transcripts/0108.html")
+s01e09 <- analizar_ep("Transcripts/0109.html")
+s01e10 <- analizar_ep("Transcripts/0110.html")
+s01e11 <- analizar_ep("Transcripts/0111.html")
+s01e12 <- analizar_ep("Transcripts/0112.html")
+s01e13 <- analizar_ep("Transcripts/0113.html")
+s01e14 <- analizar_ep("Transcripts/0114.html")
+s01e15 <- analizar_ep("Transcripts/0115.html")
+s01e16 <- analizar_ep("Transcripts/0116.html")
+s01e17 <- analizar_ep("Transcripts/0117.html")
+s01e18 <- analizar_ep("Transcripts/0118.html")
+s01e19 <- analizar_ep("Transcripts/0119.html")
+s01e20 <- analizar_ep("Transcripts/0120.html")
+s01e21 <- analizar_ep("Transcripts/0121.html")
+s01e22 <- analizar_ep("Transcripts/0122.html")
+s01e23 <- analizar_ep("Transcripts/0123.html")
+s01e24 <- analizar_ep("Transcripts/0124.html")
 
 ## Sentimiento de la temporada 1
 
-s01e01texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0101.html')
+s01e01texto <- obtener_texto('Transcripts/0101.html')
 s01e01nrc <- cbind(linenumber = seq_along(s01e01texto), get_nrc_sentiment(s01e01texto))
-s01e02texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0102.html')
+
+s01e02texto <- obtener_texto('Transcripts/0102.html')
 s01e02nrc <- cbind(linenumber = seq_along(s01e02texto), get_nrc_sentiment(s01e02texto))
-s01e03texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0103.html')
+s01e03texto <- obtener_texto('Transcripts/0103.html')
 s01e03nrc <- cbind(linenumber = seq_along(s01e03texto), get_nrc_sentiment(s01e03texto))
-s01e04texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0104.html')
+s01e04texto <- obtener_texto('Transcripts/0104.html')
 s01e04nrc <- cbind(linenumber = seq_along(s01e04texto), get_nrc_sentiment(s01e04texto))
-s01e05texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0105.html')
+s01e05texto <- obtener_texto('Transcripts/0105.html')
 s01e05nrc <- cbind(linenumber = seq_along(s01e05texto), get_nrc_sentiment(s01e05texto))
-s01e06texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0106.html')
+s01e06texto <- obtener_texto('Transcripts/0106.html')
 s01e06nrc <- cbind(linenumber = seq_along(s01e06texto), get_nrc_sentiment(s01e06texto))
-s01e07texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0107.html')
+s01e07texto <- obtener_texto('Transcripts/0107.html')
 s01e07nrc <- cbind(linenumber = seq_along(s01e07texto), get_nrc_sentiment(s01e07texto))
-s01e08texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0108.html')
+s01e08texto <- obtener_texto('Transcripts/0108.html')
 s01e08nrc <- cbind(linenumber = seq_along(s01e08texto), get_nrc_sentiment(s01e08texto))
-s01e09texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0109.html')
+s01e09texto <- obtener_texto('Transcripts/0109.html')
 s01e09nrc <- cbind(linenumber = seq_along(s01e09texto), get_nrc_sentiment(s01e09texto))
-s01e10texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0110.html')
+s01e10texto <- obtener_texto('Transcripts/0110.html')
 s01e10nrc <- cbind(linenumber = seq_along(s01e10texto), get_nrc_sentiment(s01e10texto))
-s01e11texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0111.html')
+s01e11texto <- obtener_texto('Transcripts/0111.html')
 s01e11nrc <- cbind(linenumber = seq_along(s01e11texto), get_nrc_sentiment(s01e11texto))
-s01e12texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0112.html')
+s01e12texto <- obtener_texto('Transcripts/0112.html')
 s01e12nrc <- cbind(linenumber = seq_along(s01e12texto), get_nrc_sentiment(s01e12texto))
-s01e13texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0113.html')
+s01e13texto <- obtener_texto('Transcripts/0113.html')
 s01e13nrc <- cbind(linenumber = seq_along(s01e13texto), get_nrc_sentiment(s01e13texto))
-s01e14texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0114.html')
+s01e14texto <- obtener_texto('Transcripts/0114.html')
 s01e14nrc <- cbind(linenumber = seq_along(s01e14texto), get_nrc_sentiment(s01e14texto))
-s01e15texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0115.html')
+s01e15texto <- obtener_texto('Transcripts/0115.html')
 s01e15nrc <- cbind(linenumber = seq_along(s01e15texto), get_nrc_sentiment(s01e15texto))
-s01e16texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0116.html')
+s01e16texto <- obtener_texto('Transcripts/0116.html')
 s01e16nrc <- cbind(linenumber = seq_along(s01e16texto), get_nrc_sentiment(s01e16texto))
-s01e17texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0117.html')
+s01e17texto <- obtener_texto('Transcripts/0117.html')
 s01e17nrc <- cbind(linenumber = seq_along(s01e17texto), get_nrc_sentiment(s01e17texto))
-s01e18texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0118.html')
+s01e18texto <- obtener_texto('Transcripts/0118.html')
 s01e18nrc <- cbind(linenumber = seq_along(s01e18texto), get_nrc_sentiment(s01e18texto))
-s01e19texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0119.html')
+s01e19texto <- obtener_texto('Transcripts/0119.html')
 s01e19nrc <- cbind(linenumber = seq_along(s01e19texto), get_nrc_sentiment(s01e19texto))
-s01e20texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0120.html')
+s01e20texto <- obtener_texto('Transcripts/0120.html')
 s01e20nrc <- cbind(linenumber = seq_along(s01e20texto), get_nrc_sentiment(s01e20texto))
-s01e21texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0121.html')
+s01e21texto <- obtener_texto('Transcripts/0121.html')
 s01e21nrc <- cbind(linenumber = seq_along(s01e21texto), get_nrc_sentiment(s01e21texto))
-s01e22texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0122.html')
+s01e22texto <- obtener_texto('Transcripts/0122.html')
 s01e22nrc <- cbind(linenumber = seq_along(s01e22texto), get_nrc_sentiment(s01e22texto))
-s01e23texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0123.html')
+s01e23texto <- obtener_texto('Transcripts/0123.html')
 s01e23nrc <- cbind(linenumber = seq_along(s01e23texto), get_nrc_sentiment(s01e23texto))
-s01e24texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0124.html')
+s01e24texto <- obtener_texto('Transcripts/0124.html')
 s01e24nrc <- cbind(linenumber = seq_along(s01e24texto), get_nrc_sentiment(s01e24texto))
+
+
+## Entropia temporada 1
+
+s01e01Hsent<-entropySent(get_nrc_sentiment(s01e01texto))
+s01e02Hsent<-entropySent(get_nrc_sentiment(s01e02texto))
+s01e03Hsent<-entropySent(get_nrc_sentiment(s01e03texto))
+s01e04Hsent<-entropySent(get_nrc_sentiment(s01e04texto))
+s01e05Hsent<-entropySent(get_nrc_sentiment(s01e05texto))
+s01e06Hsent<-entropySent(get_nrc_sentiment(s01e06texto))
+s01e07Hsent<-entropySent(get_nrc_sentiment(s01e07texto))
+s01e08Hsent<-entropySent(get_nrc_sentiment(s01e08texto))
+s01e09Hsent<-entropySent(get_nrc_sentiment(s01e09texto))
+s01e10Hsent<-entropySent(get_nrc_sentiment(s01e10texto))
+s01e11Hsent<-entropySent(get_nrc_sentiment(s01e11texto))
+s01e12Hsent<-entropySent(get_nrc_sentiment(s01e12texto))
+s01e13Hsent<-entropySent(get_nrc_sentiment(s01e13texto))
+s01e14Hsent<-entropySent(get_nrc_sentiment(s01e14texto))
+s01e15Hsent<-entropySent(get_nrc_sentiment(s01e15texto))
+s01e16Hsent<-entropySent(get_nrc_sentiment(s01e16texto))
+s01e17Hsent<-entropySent(get_nrc_sentiment(s01e17texto))
+s01e18Hsent<-entropySent(get_nrc_sentiment(s01e18texto))
+s01e19Hsent<-entropySent(get_nrc_sentiment(s01e19texto))
+s01e20Hsent<-entropySent(get_nrc_sentiment(s01e20texto))
+s01e21Hsent<-entropySent(get_nrc_sentiment(s01e21texto))
+s01e22Hsent<-entropySent(get_nrc_sentiment(s01e22texto))
+s01e23Hsent<-entropySent(get_nrc_sentiment(s01e23texto))
+s01e24Hsent<-entropySent(get_nrc_sentiment(s01e24texto))
+
+s01meanH<- cbind(mean(s01e01Hsent),mean(s01e02Hsent),mean(s01e03Hsent),mean(s01e04Hsent),mean(s01e05Hsent),mean(s01e06Hsent),mean(s01e07Hsent),mean(s01e08Hsent),mean(s01e09Hsent),mean(s01e10Hsent),mean(s01e11Hsent),mean(s01e12Hsent),mean(s01e13Hsent),mean(s01e14Hsent),mean(s01e15Hsent),mean(s01e16Hsent),mean(s01e17Hsent),mean(s01e18Hsent),mean(s01e19Hsent),mean(s01e20Hsent),mean(s01e21Hsent),mean(s01e22Hsent),mean(s01e23Hsent),mean(s01e24Hsent))
+
+
+s01e01EvolutionH<-data.frame(linenumberPercent = 100*s01e01nrc$linenumber/max(s01e01nrc$linenumber),H=s01e01Hsent)
+s01e02EvolutionH<-data.frame(linenumberPercent = 100*s01e02nrc$linenumber/max(s01e02nrc$linenumber),H=s01e02Hsent)
+s01e03EvolutionH<-data.frame(linenumberPercent = 100*s01e03nrc$linenumber/max(s01e03nrc$linenumber),H=s01e03Hsent)
+s01e04EvolutionH<-data.frame(linenumberPercent = 100*s01e04nrc$linenumber/max(s01e04nrc$linenumber),H=s01e04Hsent)
+s01e05EvolutionH<-data.frame(linenumberPercent = 100*s01e05nrc$linenumber/max(s01e05nrc$linenumber),H=s01e05Hsent)
+s01e06EvolutionH<-data.frame(linenumberPercent = 100*s01e06nrc$linenumber/max(s01e06nrc$linenumber),H=s01e06Hsent)
+s01e07EvolutionH<-data.frame(linenumberPercent = 100*s01e07nrc$linenumber/max(s01e07nrc$linenumber),H=s01e07Hsent)
+s01e08EvolutionH<-data.frame(linenumberPercent = 100*s01e08nrc$linenumber/max(s01e08nrc$linenumber),H=s01e08Hsent)
+s01e09EvolutionH<-data.frame(linenumberPercent = 100*s01e09nrc$linenumber/max(s01e09nrc$linenumber),H=s01e09Hsent)
+s01e10EvolutionH<-data.frame(linenumberPercent = 100*s01e10nrc$linenumber/max(s01e10nrc$linenumber),H=s01e10Hsent)
+s01e11EvolutionH<-data.frame(linenumberPercent = 100*s01e11nrc$linenumber/max(s01e11nrc$linenumber),H=s01e11Hsent)
+s01e12EvolutionH<-data.frame(linenumberPercent = 100*s01e12nrc$linenumber/max(s01e12nrc$linenumber),H=s01e12Hsent)
+s01e13EvolutionH<-data.frame(linenumberPercent = 100*s01e13nrc$linenumber/max(s01e13nrc$linenumber),H=s01e13Hsent)
+s01e14EvolutionH<-data.frame(linenumberPercent = 100*s01e14nrc$linenumber/max(s01e14nrc$linenumber),H=s01e14Hsent)
+s01e15EvolutionH<-data.frame(linenumberPercent = 100*s01e15nrc$linenumber/max(s01e15nrc$linenumber),H=s01e15Hsent)
+s01e16EvolutionH<-data.frame(linenumberPercent = 100*s01e16nrc$linenumber/max(s01e16nrc$linenumber),H=s01e16Hsent)
+s01e17EvolutionH<-data.frame(linenumberPercent = 100*s01e17nrc$linenumber/max(s01e17nrc$linenumber),H=s01e17Hsent)
+s01e18EvolutionH<-data.frame(linenumberPercent = 100*s01e18nrc$linenumber/max(s01e18nrc$linenumber),H=s01e18Hsent)
+s01e19EvolutionH<-data.frame(linenumberPercent = 100*s01e19nrc$linenumber/max(s01e19nrc$linenumber),H=s01e19Hsent)
+s01e20EvolutionH<-data.frame(linenumberPercent = 100*s01e20nrc$linenumber/max(s01e20nrc$linenumber),H=s01e20Hsent)
+s01e21EvolutionH<-data.frame(linenumberPercent = 100*s01e21nrc$linenumber/max(s01e21nrc$linenumber),H=s01e21Hsent)
+s01e22EvolutionH<-data.frame(linenumberPercent = 100*s01e22nrc$linenumber/max(s01e22nrc$linenumber),H=s01e22Hsent)
+s01e23EvolutionH<-data.frame(linenumberPercent = 100*s01e23nrc$linenumber/max(s01e23nrc$linenumber),H=s01e23Hsent)
+s01e24EvolutionH<-data.frame(linenumberPercent = 100*s01e24nrc$linenumber/max(s01e24nrc$linenumber),H=s01e24Hsent)
+
+
+
+
+
+
+
+
+
 
 s01texto <- c("s01e01", s01e01texto, "s01e02", s01e02texto, "s01e03", s01e03texto, "s01e04", s01e04texto, "s01e05", s01e05texto, "s01e06", s01e06texto, "s01e07", s01e07texto, "s01e08", s01e08texto, "s01e09", s01e09texto, "s01e10", s01e10texto, "s01e11", s01e11texto, "s01e12", s01e12texto, "s01e13", s01e13texto, "s01e14", s01e14texto, "s01e15", s01e15texto, "s01e16", s01e16texto, "s01e17", s01e17texto, "s01e18", s01e18texto, "s01e19", s01e19texto, "s01e20", s01e20texto, "s01e21", s01e21texto, "s01e22", s01e22texto, "s01e23", s01e23texto, "s01e24", s01e24texto)
 s01nrc <- cbind(linenumber = seq_along(s01texto), get_nrc_sentiment(s01texto))
+s01Hsent<-entropySent(get_nrc_sentiment(s01texto))
+s01EvolutionH<-data.frame(linenumberPercent = 100*s01nrc$linenumber/max(s01nrc$linenumber),s01Hsent)
+
+
 s01annotatetext <- data.frame(x = c(14, 50, 180, 234), y = c(2.4, -1.4, -2.2, 2.4), 
                            label = c("Ross sort of\nasks Rachel out", "Rachel kisses Ross\nat the laundry place", "Girls win at poker", "Rachel finds out\nabout Ross"))
 s01annotatearrow <- data.frame(x = c(14, 50, 180, 234), 
@@ -270,6 +350,32 @@ s01_sentiment <- ggplot(data = s01ft, aes(x = linenumber, y = ft)) +
               size = 4, inherit.aes = FALSE) +
     geom_segment(data = s01annotatearrow, aes(x = x, y = y1, xend = x, yend = y2),
               arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
+
+
+s01ftH <- as.numeric(get_transformed_values(s01EvolutionH$s01Hsent, 
+                                           low_pass_size = 3,
+                                           x_reverse_len = 240,
+                                           scale_vals = TRUE,
+                                           scale_range = FALSE))
+s01ftH <- data.frame(cbind(linenumber = seq_along(s01ftH), ft = s01ftH))
+s01_H <- ggplot(data = s01ftH, aes(x = linenumber, y = ft)) +
+  geom_bar(stat = "identity", alpha = 0.8, color = "midnightblue", fill = "midnightblue") +
+  theme_minimal() +
+  ylab("H") +
+  ggtitle(expression(paste("H in ", italic("Season 1")))) +
+  theme(axis.title.x=element_blank()) +
+  theme(axis.ticks.x=element_blank()) +
+  theme(axis.text.x=element_blank()) +
+  geom_text(data = s01annotatetext, aes(x,y,label=label), hjust = 0.5, 
+            size = 4, inherit.aes = FALSE) +
+  geom_segment(data = s01annotatearrow, aes(x = x, y = y1, xend = x, yend = y2),
+               arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
+
+
+
+
+
+
 
 s01e13annotatetext <- data.frame(x = c(4, 24, 58, 92, 122, 146, 162, 177, 194, 212, 238), y = c(1.4, 2.2, -1.2, 1.4, -1.8, 2.8, -1.2, 1.6, -2.2, 1.4, -1.8), 
                               label = c("Chandler sees\nRachel naked", 
@@ -798,87 +904,150 @@ s02emotions <- ggplot(data = emotions, aes(x = linenumber, y = sentiment, fill =
 
 # Tercera temporada
 
-s03e01 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0301.html")
-s03e02 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0302.html")
-s03e03 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0303.html")
-s03e04 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0304.html")
-s03e05 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0305.html")
-s03e06 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0306.html")
-s03e07 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0307.html")
-s03e08 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0308.html")
-s03e09 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0309.html")
-s03e10 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0310.html")
-s03e11 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0311.html")
-s03e12 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0312.html")
-s03e13 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0313.html")
-s03e14 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0314.html")
-s03e15 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0315.html")
-s03e16 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0316.html")
-s03e17 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0317.html")
-s03e18 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0318.html")
-s03e19 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0319.html")
-s03e20 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0320.html")
-s03e21 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0321.html")
-s03e22 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0322.html")
-s03e23 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0323.html")
-s03e24 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0324.html")
-s03e25 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0325.html")
+## Sentimiento de cada episodio
+
+s03e01 <- analizar_ep("Transcripts/0301.html")
+s03e02 <- analizar_ep("Transcripts/0302.html")
+s03e03 <- analizar_ep("Transcripts/0303.html")
+s03e04 <- analizar_ep("Transcripts/0304.html")
+s03e05 <- analizar_ep("Transcripts/0305.html")
+s03e06 <- analizar_ep("Transcripts/0306.html")
+s03e07 <- analizar_ep("Transcripts/0307.html")
+s03e08 <- analizar_ep("Transcripts/0308.html")
+s03e09 <- analizar_ep("Transcripts/0309.html")
+s03e10 <- analizar_ep("Transcripts/0310.html")
+s03e11 <- analizar_ep("Transcripts/0311.html")
+s03e12 <- analizar_ep("Transcripts/0312.html")
+s03e13 <- analizar_ep("Transcripts/0313.html")
+s03e14 <- analizar_ep("Transcripts/0314.html")
+s03e15 <- analizar_ep("Transcripts/0315.html")
+s03e16 <- analizar_ep("Transcripts/0316.html")
+s03e17 <- analizar_ep("Transcripts/0317.html")
+s03e18 <- analizar_ep("Transcripts/0318.html")
+s03e19 <- analizar_ep("Transcripts/0319.html")
+s03e20 <- analizar_ep("Transcripts/0320.html")
+s03e21 <- analizar_ep("Transcripts/0321.html")
+s03e22 <- analizar_ep("Transcripts/0322.html")
+s03e23 <- analizar_ep("Transcripts/0323.html")
+s03e24 <- analizar_ep("Transcripts/0324.html")
+s03e25 <- analizar_ep("Transcripts/0325.html")
 
 ## Sentimiento de la temporada 3
 
-s03e01texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0301.html')
+s03e01texto <- obtener_texto('Transcripts/0301.html')
 s03e01nrc <- cbind(linenumber = seq_along(s03e01texto), get_nrc_sentiment(s03e01texto))
-s03e02texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0302.html')
+
+s03e02texto <- obtener_texto('Transcripts/0302.html')
 s03e02nrc <- cbind(linenumber = seq_along(s03e02texto), get_nrc_sentiment(s03e02texto))
-s03e03texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0303.html')
+s03e03texto <- obtener_texto('Transcripts/0303.html')
 s03e03nrc <- cbind(linenumber = seq_along(s03e03texto), get_nrc_sentiment(s03e03texto))
-s03e04texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0304.html')
+s03e04texto <- obtener_texto('Transcripts/0304.html')
 s03e04nrc <- cbind(linenumber = seq_along(s03e04texto), get_nrc_sentiment(s03e04texto))
-s03e05texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0305.html')
+s03e05texto <- obtener_texto('Transcripts/0305.html')
 s03e05nrc <- cbind(linenumber = seq_along(s03e05texto), get_nrc_sentiment(s03e05texto))
-s03e06texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0306.html')
+s03e06texto <- obtener_texto('Transcripts/0306.html')
 s03e06nrc <- cbind(linenumber = seq_along(s03e06texto), get_nrc_sentiment(s03e06texto))
-s03e07texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0307.html')
+s03e07texto <- obtener_texto('Transcripts/0307.html')
 s03e07nrc <- cbind(linenumber = seq_along(s03e07texto), get_nrc_sentiment(s03e07texto))
-s03e08texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0308.html')
+s03e08texto <- obtener_texto('Transcripts/0308.html')
 s03e08nrc <- cbind(linenumber = seq_along(s03e08texto), get_nrc_sentiment(s03e08texto))
-s03e09texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0309.html')
+s03e09texto <- obtener_texto('Transcripts/0309.html')
 s03e09nrc <- cbind(linenumber = seq_along(s03e09texto), get_nrc_sentiment(s03e09texto))
-s03e10texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0310.html')
+s03e10texto <- obtener_texto('Transcripts/0310.html')
 s03e10nrc <- cbind(linenumber = seq_along(s03e10texto), get_nrc_sentiment(s03e10texto))
-s03e11texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0311.html')
+s03e11texto <- obtener_texto('Transcripts/0311.html')
 s03e11nrc <- cbind(linenumber = seq_along(s03e11texto), get_nrc_sentiment(s03e11texto))
-s03e12texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0312.html')
+s03e12texto <- obtener_texto('Transcripts/0312.html')
 s03e12nrc <- cbind(linenumber = seq_along(s03e12texto), get_nrc_sentiment(s03e12texto))
-s03e13texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0313.html')
+s03e13texto <- obtener_texto('Transcripts/0313.html')
 s03e13nrc <- cbind(linenumber = seq_along(s03e13texto), get_nrc_sentiment(s03e13texto))
-s03e14texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0314.html')
+s03e14texto <- obtener_texto('Transcripts/0314.html')
 s03e14nrc <- cbind(linenumber = seq_along(s03e14texto), get_nrc_sentiment(s03e14texto))
-s03e15texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0315.html')
+s03e15texto <- obtener_texto('Transcripts/0315.html')
 s03e15nrc <- cbind(linenumber = seq_along(s03e15texto), get_nrc_sentiment(s03e15texto))
-s03e16texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0316.html')
+s03e16texto <- obtener_texto('Transcripts/0316.html')
 s03e16nrc <- cbind(linenumber = seq_along(s03e16texto), get_nrc_sentiment(s03e16texto))
-s03e17texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0317.html')
+s03e17texto <- obtener_texto('Transcripts/0317.html')
 s03e17nrc <- cbind(linenumber = seq_along(s03e17texto), get_nrc_sentiment(s03e17texto))
-s03e18texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0318.html')
+s03e18texto <- obtener_texto('Transcripts/0318.html')
 s03e18nrc <- cbind(linenumber = seq_along(s03e18texto), get_nrc_sentiment(s03e18texto))
-s03e19texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0319.html')
+s03e19texto <- obtener_texto('Transcripts/0319.html')
 s03e19nrc <- cbind(linenumber = seq_along(s03e19texto), get_nrc_sentiment(s03e19texto))
-s03e20texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0320.html')
+s03e20texto <- obtener_texto('Transcripts/0320.html')
 s03e20nrc <- cbind(linenumber = seq_along(s03e20texto), get_nrc_sentiment(s03e20texto))
-s03e21texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0321.html')
+s03e21texto <- obtener_texto('Transcripts/0321.html')
 s03e21nrc <- cbind(linenumber = seq_along(s03e21texto), get_nrc_sentiment(s03e21texto))
-s03e22texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0322.html')
+s03e22texto <- obtener_texto('Transcripts/0322.html')
 s03e22nrc <- cbind(linenumber = seq_along(s03e22texto), get_nrc_sentiment(s03e22texto))
-s03e23texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0323.html')
+s03e23texto <- obtener_texto('Transcripts/0323.html')
 s03e23nrc <- cbind(linenumber = seq_along(s03e23texto), get_nrc_sentiment(s03e23texto))
-s03e24texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0324.html')
+s03e24texto <- obtener_texto('Transcripts/0324.html')
 s03e24nrc <- cbind(linenumber = seq_along(s03e24texto), get_nrc_sentiment(s03e24texto))
-s03e25texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0325.html')
-s03e25nrc <- cbind(linenumber = seq_along(s03e24texto), get_nrc_sentiment(s03e25texto))
+s03e25texto <- obtener_texto('Transcripts/0325.html')
+s03e25nrc <- cbind(linenumber = seq_along(s03e25texto), get_nrc_sentiment(s03e25texto))
+
+
+## Entropia temporada 3
+
+s03e01Hsent<-entropySent(get_nrc_sentiment(s03e01texto))
+s03e02Hsent<-entropySent(get_nrc_sentiment(s03e02texto))
+s03e03Hsent<-entropySent(get_nrc_sentiment(s03e03texto))
+s03e04Hsent<-entropySent(get_nrc_sentiment(s03e04texto))
+s03e05Hsent<-entropySent(get_nrc_sentiment(s03e05texto))
+s03e06Hsent<-entropySent(get_nrc_sentiment(s03e06texto))
+s03e07Hsent<-entropySent(get_nrc_sentiment(s03e07texto))
+s03e08Hsent<-entropySent(get_nrc_sentiment(s03e08texto))
+s03e09Hsent<-entropySent(get_nrc_sentiment(s03e09texto))
+s03e10Hsent<-entropySent(get_nrc_sentiment(s03e10texto))
+s03e11Hsent<-entropySent(get_nrc_sentiment(s03e11texto))
+s03e12Hsent<-entropySent(get_nrc_sentiment(s03e12texto))
+s03e13Hsent<-entropySent(get_nrc_sentiment(s03e13texto))
+s03e14Hsent<-entropySent(get_nrc_sentiment(s03e14texto))
+s03e15Hsent<-entropySent(get_nrc_sentiment(s03e15texto))
+s03e16Hsent<-entropySent(get_nrc_sentiment(s03e16texto))
+s03e17Hsent<-entropySent(get_nrc_sentiment(s03e17texto))
+s03e18Hsent<-entropySent(get_nrc_sentiment(s03e18texto))
+s03e19Hsent<-entropySent(get_nrc_sentiment(s03e19texto))
+s03e20Hsent<-entropySent(get_nrc_sentiment(s03e20texto))
+s03e21Hsent<-entropySent(get_nrc_sentiment(s03e21texto))
+s03e22Hsent<-entropySent(get_nrc_sentiment(s03e22texto))
+s03e23Hsent<-entropySent(get_nrc_sentiment(s03e23texto))
+s03e24Hsent<-entropySent(get_nrc_sentiment(s03e24texto))
+s03e25Hsent<-entropySent(get_nrc_sentiment(s03e25texto))
+
+s03meanH<- cbind(mean(s03e01Hsent),mean(s03e02Hsent),mean(s03e03Hsent),mean(s03e04Hsent),mean(s03e05Hsent),mean(s03e06Hsent),mean(s03e07Hsent),mean(s03e08Hsent),mean(s03e09Hsent),mean(s03e10Hsent),mean(s03e11Hsent),mean(s03e12Hsent),mean(s03e13Hsent),mean(s03e14Hsent),mean(s03e15Hsent),mean(s03e16Hsent),mean(s03e17Hsent),mean(s03e18Hsent),mean(s03e19Hsent),mean(s03e20Hsent),mean(s03e21Hsent),mean(s03e22Hsent),mean(s03e23Hsent),mean(s03e24Hsent),mean(s03e25Hsent))
+
+
+s03e01EvolutionH<-data.frame(linenumberPercent = 100*s03e01nrc$linenumber/max(s03e01nrc$linenumber),s03e01Hsent)
+s03e02EvolutionH<-data.frame(linenumberPercent = 100*s03e02nrc$linenumber/max(s03e02nrc$linenumber),s03e02Hsent)
+s03e03EvolutionH<-data.frame(linenumberPercent = 100*s03e03nrc$linenumber/max(s03e03nrc$linenumber),s03e03Hsent)
+s03e04EvolutionH<-data.frame(linenumberPercent = 100*s03e04nrc$linenumber/max(s03e04nrc$linenumber),s03e04Hsent)
+s03e05EvolutionH<-data.frame(linenumberPercent = 100*s03e05nrc$linenumber/max(s03e05nrc$linenumber),s03e05Hsent)
+s03e06EvolutionH<-data.frame(linenumberPercent = 100*s03e06nrc$linenumber/max(s03e06nrc$linenumber),s03e06Hsent)
+s03e07EvolutionH<-data.frame(linenumberPercent = 100*s03e07nrc$linenumber/max(s03e07nrc$linenumber),s03e07Hsent)
+s03e08EvolutionH<-data.frame(linenumberPercent = 100*s03e08nrc$linenumber/max(s03e08nrc$linenumber),s03e08Hsent)
+s03e09EvolutionH<-data.frame(linenumberPercent = 100*s03e09nrc$linenumber/max(s03e09nrc$linenumber),s03e09Hsent)
+s03e10EvolutionH<-data.frame(linenumberPercent = 100*s03e10nrc$linenumber/max(s03e10nrc$linenumber),s03e10Hsent)
+s03e11EvolutionH<-data.frame(linenumberPercent = 100*s03e11nrc$linenumber/max(s03e11nrc$linenumber),s03e11Hsent)
+s03e12EvolutionH<-data.frame(linenumberPercent = 100*s03e12nrc$linenumber/max(s03e12nrc$linenumber),s03e12Hsent)
+s03e13EvolutionH<-data.frame(linenumberPercent = 100*s03e13nrc$linenumber/max(s03e13nrc$linenumber),s03e13Hsent)
+s03e14EvolutionH<-data.frame(linenumberPercent = 100*s03e14nrc$linenumber/max(s03e14nrc$linenumber),s03e14Hsent)
+s03e15EvolutionH<-data.frame(linenumberPercent = 100*s03e15nrc$linenumber/max(s03e15nrc$linenumber),s03e15Hsent)
+s03e16EvolutionH<-data.frame(linenumberPercent = 100*s03e16nrc$linenumber/max(s03e16nrc$linenumber),s03e16Hsent)
+s03e17EvolutionH<-data.frame(linenumberPercent = 100*s03e17nrc$linenumber/max(s03e17nrc$linenumber),s03e17Hsent)
+s03e18EvolutionH<-data.frame(linenumberPercent = 100*s03e18nrc$linenumber/max(s03e18nrc$linenumber),s03e18Hsent)
+s03e19EvolutionH<-data.frame(linenumberPercent = 100*s03e19nrc$linenumber/max(s03e19nrc$linenumber),s03e19Hsent)
+s03e20EvolutionH<-data.frame(linenumberPercent = 100*s03e20nrc$linenumber/max(s03e20nrc$linenumber),s03e20Hsent)
+s03e21EvolutionH<-data.frame(linenumberPercent = 100*s03e21nrc$linenumber/max(s03e21nrc$linenumber),s03e21Hsent)
+s03e22EvolutionH<-data.frame(linenumberPercent = 100*s03e22nrc$linenumber/max(s03e22nrc$linenumber),s03e22Hsent)
+s03e23EvolutionH<-data.frame(linenumberPercent = 100*s03e23nrc$linenumber/max(s03e23nrc$linenumber),s03e23Hsent)
+s03e24EvolutionH<-data.frame(linenumberPercent = 100*s03e24nrc$linenumber/max(s03e24nrc$linenumber),s03e24Hsent)
+s03e25EvolutionH<-data.frame(linenumberPercent = 100*s03e25nrc$linenumber/max(s03e25nrc$linenumber),s03e25Hsent)
 
 s03texto <- c("s03e01", s03e01texto, "s03e02", s03e02texto, "s03e03", s03e03texto, "s03e04", s03e04texto, "s03e05", s03e05texto, "s03e06", s03e06texto, "s03e07", s03e07texto, "s03e08", s03e08texto, "s03e09", s03e09texto, "s03e10", s03e10texto, "s03e11", s03e11texto, "s03e12", s03e12texto, "s03e13", s03e13texto, "s03e14", s03e14texto, "s03e15", s03e15texto, "s03e16", s03e16texto, "s03e17", s03e17texto, "s03e18", s03e18texto, "s03e19", s03e19texto, "s03e20", s03e20texto, "s03e21", s03e21texto, "s03e22", s03e22texto, "s03e23", s03e23texto, "s03e24", s03e24texto, "s03e25", s03e25texto)
 s03nrc <- cbind(linenumber = seq_along(s03texto), get_nrc_sentiment(s03texto))
+s03Hsent<-entropySent(get_nrc_sentiment(s03texto))
+s03EvolutionH<-data.frame(linenumberPercent = 100*s03nrc$linenumber/max(s03nrc$linenumber),s03Hsent)
 s03annotatetext <- data.frame(x = c(14, 235), y = rep(2.2, 1), 
                            label = c("Ross sort of asks Rachel out", "Ross has a baby"))
 s03annotatearrow <- data.frame(x = c(14, 235), 
@@ -909,6 +1078,40 @@ s03_sentiment <- ggplot(data = s03ft, aes(x = linenumber, y = ft)) +
             size = 4, inherit.aes = FALSE) +
   geom_segment(data = s03annotatearrow, aes(x = x, y = y1, xend = x, yend = y2),
                arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
+
+
+s03cortoannotatetext <- data.frame(x = c(5, 90, 103, 136, 149, 187, 239), y = c(2, 3, -1.8, 1.2, -1.6, 2.2, 1.4), 
+                                   label = c("Monica misses\nRichard", "Rachel's first\njob in fashion", "Ross starts\ngetting jealous", "Ross and Rachel\ntake a break", "Ross and Rachel\nbreak up", "Joey hooks up with Kate", "Phoebe knows\nher mother"))
+s03cortoannotatearrow <- data.frame(x = c(5, 90, 103, 136, 149, 187, 239), 
+                                    y1 = c(1.6, 2.6, -1.6, 1, -1.4, 2, 1), y2 = c(0.8, 1.8, -0.8, 0.2, -0.6, 1.2, 0.2))
+
+
+s03ftH <- as.numeric(get_transformed_values(s03e04EvolutionH$s03e04Hsent, 
+                                            low_pass_size = 3,
+                                            x_reverse_len = 240,
+                                            scale_vals = TRUE,
+                                            scale_range = FALSE))
+s03ftH <- data.frame(cbind(linenumber = seq_along(s03ftH), ft = s03ftH))
+s03_H <- ggplot(data = s03ftH, aes(x = linenumber, y = ft)) +
+  geom_bar(stat = "identity", alpha = 0.8, color = "midnightblue", fill = "midnightblue") +
+  theme_minimal() +
+  ylab("H") +
+  ggtitle(expression(paste("H in ", italic("Season 3")))) +
+  theme(axis.title.x=element_blank()) +
+  theme(axis.ticks.x=element_blank()) +
+  theme(axis.text.x=element_blank()) +
+  geom_text(data = s03cortoannotatetext, aes(x,y,label=label), hjust = 0.5, 
+            size = 4, inherit.aes = FALSE) +
+  geom_segment(data = s03cortoannotatearrow, aes(x = x, y = y1, xend = x, yend = y2),
+               arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
+
+
+
+
+
+
+
+
 
 s03_joy <- pintar_joy_temp(s03nrc, s03texto, "Season 1")
 
@@ -1368,81 +1571,141 @@ s04emotions <- ggplot(data = emotions, aes(x = linenumber, y = sentiment, fill =
 
 # Quinta temporada
 
-s05e01 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0501.html")
-s05e02 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0502.html")
-s05e03 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0503.html")
-s05e04 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0504.html")
-s05e05 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0505.html")
-s05e06 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0506.html")
-s05e07 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0507.html")
-s05e08 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0508.html")
-s05e09 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0509.html")
-s05e10 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0510.html")
-s05e11 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0511.html")
-s05e12 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0512.html")
-s05e13 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0513.html")
-s05e14 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0514.html")
-s05e15 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0515.html")
-s05e16 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0516.html")
-s05e17 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0517.html")
-s05e18 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0518.html")
-s05e19 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0519.html")
-s05e20 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0520.html")
-s05e21 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0521.html")
-s05e22 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0522.html")
-s05e23 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0523.html")
-s05e24 <- analizar_ep("C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0524.html")
+
+## Sentimiento de cada episodio
+
+s05e01 <- analizar_ep("Transcripts/0501.html")
+s05e02 <- analizar_ep("Transcripts/0502.html")
+s05e03 <- analizar_ep("Transcripts/0503.html")
+s05e04 <- analizar_ep("Transcripts/0504.html")
+s05e05 <- analizar_ep("Transcripts/0505.html")
+s05e06 <- analizar_ep("Transcripts/0506.html")
+s05e07 <- analizar_ep("Transcripts/0507.html")
+s05e08 <- analizar_ep("Transcripts/0508.html")
+s05e09 <- analizar_ep("Transcripts/0509.html")
+s05e10 <- analizar_ep("Transcripts/0510.html")
+s05e11 <- analizar_ep("Transcripts/0511.html")
+s05e12 <- analizar_ep("Transcripts/0512.html")
+s05e13 <- analizar_ep("Transcripts/0513.html")
+s05e14 <- analizar_ep("Transcripts/0514.html")
+s05e15 <- analizar_ep("Transcripts/0515.html")
+s05e16 <- analizar_ep("Transcripts/0516.html")
+s05e17 <- analizar_ep("Transcripts/0517.html")
+s05e18 <- analizar_ep("Transcripts/0518.html")
+s05e19 <- analizar_ep("Transcripts/0519.html")
+s05e20 <- analizar_ep("Transcripts/0520.html")
+s05e21 <- analizar_ep("Transcripts/0521.html")
+s05e22 <- analizar_ep("Transcripts/0522.html")
+s05e23 <- analizar_ep("Transcripts/0523.html")
+s05e24 <- analizar_ep("Transcripts/0524.html")
 
 ## Sentimiento de la temporada 5
 
-s05e01texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0501.html')
+s05e01texto <- obtener_texto('Transcripts/0501.html')
 s05e01nrc <- cbind(linenumber = seq_along(s05e01texto), get_nrc_sentiment(s05e01texto))
-s05e02texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0502.html')
+
+s05e02texto <- obtener_texto('Transcripts/0502.html')
 s05e02nrc <- cbind(linenumber = seq_along(s05e02texto), get_nrc_sentiment(s05e02texto))
-s05e03texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0503.html')
+s05e03texto <- obtener_texto('Transcripts/0503.html')
 s05e03nrc <- cbind(linenumber = seq_along(s05e03texto), get_nrc_sentiment(s05e03texto))
-s05e04texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0504.html')
+s05e04texto <- obtener_texto('Transcripts/0504.html')
 s05e04nrc <- cbind(linenumber = seq_along(s05e04texto), get_nrc_sentiment(s05e04texto))
-s05e05texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0505.html')
+s05e05texto <- obtener_texto('Transcripts/0505.html')
 s05e05nrc <- cbind(linenumber = seq_along(s05e05texto), get_nrc_sentiment(s05e05texto))
-s05e06texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0506.html')
+s05e06texto <- obtener_texto('Transcripts/0506.html')
 s05e06nrc <- cbind(linenumber = seq_along(s05e06texto), get_nrc_sentiment(s05e06texto))
-s05e07texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0507.html')
+s05e07texto <- obtener_texto('Transcripts/0507.html')
 s05e07nrc <- cbind(linenumber = seq_along(s05e07texto), get_nrc_sentiment(s05e07texto))
-s05e08texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0508.html')
+s05e08texto <- obtener_texto('Transcripts/0508.html')
 s05e08nrc <- cbind(linenumber = seq_along(s05e08texto), get_nrc_sentiment(s05e08texto))
-s05e09texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0509.html')
+s05e09texto <- obtener_texto('Transcripts/0509.html')
 s05e09nrc <- cbind(linenumber = seq_along(s05e09texto), get_nrc_sentiment(s05e09texto))
-s05e10texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0510.html')
+s05e10texto <- obtener_texto('Transcripts/0510.html')
 s05e10nrc <- cbind(linenumber = seq_along(s05e10texto), get_nrc_sentiment(s05e10texto))
-s05e11texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0511.html')
+s05e11texto <- obtener_texto('Transcripts/0511.html')
 s05e11nrc <- cbind(linenumber = seq_along(s05e11texto), get_nrc_sentiment(s05e11texto))
-s05e12texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0512.html')
+s05e12texto <- obtener_texto('Transcripts/0512.html')
 s05e12nrc <- cbind(linenumber = seq_along(s05e12texto), get_nrc_sentiment(s05e12texto))
-s05e13texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0513.html')
+s05e13texto <- obtener_texto('Transcripts/0513.html')
 s05e13nrc <- cbind(linenumber = seq_along(s05e13texto), get_nrc_sentiment(s05e13texto))
-s05e14texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0514.html')
+s05e14texto <- obtener_texto('Transcripts/0514.html')
 s05e14nrc <- cbind(linenumber = seq_along(s05e14texto), get_nrc_sentiment(s05e14texto))
-s05e15texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0515.html')
+s05e15texto <- obtener_texto('Transcripts/0515.html')
 s05e15nrc <- cbind(linenumber = seq_along(s05e15texto), get_nrc_sentiment(s05e15texto))
-s05e16texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0516.html')
+s05e16texto <- obtener_texto('Transcripts/0516.html')
 s05e16nrc <- cbind(linenumber = seq_along(s05e16texto), get_nrc_sentiment(s05e16texto))
-s05e17texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0517.html')
+s05e17texto <- obtener_texto('Transcripts/0517.html')
 s05e17nrc <- cbind(linenumber = seq_along(s05e17texto), get_nrc_sentiment(s05e17texto))
-s05e18texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0518.html')
+s05e18texto <- obtener_texto('Transcripts/0518.html')
 s05e18nrc <- cbind(linenumber = seq_along(s05e18texto), get_nrc_sentiment(s05e18texto))
-s05e19texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0519.html')
+s05e19texto <- obtener_texto('Transcripts/0519.html')
 s05e19nrc <- cbind(linenumber = seq_along(s05e19texto), get_nrc_sentiment(s05e19texto))
-s05e20texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0520.html')
+s05e20texto <- obtener_texto('Transcripts/0520.html')
 s05e20nrc <- cbind(linenumber = seq_along(s05e20texto), get_nrc_sentiment(s05e20texto))
-s05e21texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0521.html')
+s05e21texto <- obtener_texto('Transcripts/0521.html')
 s05e21nrc <- cbind(linenumber = seq_along(s05e21texto), get_nrc_sentiment(s05e21texto))
-s05e22texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0522.html')
+s05e22texto <- obtener_texto('Transcripts/0522.html')
 s05e22nrc <- cbind(linenumber = seq_along(s05e22texto), get_nrc_sentiment(s05e22texto))
-s05e23texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0523.html')
+s05e23texto <- obtener_texto('Transcripts/0523.html')
 s05e23nrc <- cbind(linenumber = seq_along(s05e23texto), get_nrc_sentiment(s05e23texto))
-s05e24texto <- obtener_texto('C:/Users/Leticia/Documents/GitHub/R/Friends/Transcripts/0524.html')
+s05e24texto <- obtener_texto('Transcripts/0524.html')
 s05e24nrc <- cbind(linenumber = seq_along(s05e24texto), get_nrc_sentiment(s05e24texto))
+
+
+## Entropia temporada 5
+
+s05e01Hsent<-entropySent(get_nrc_sentiment(s05e01texto))
+s05e02Hsent<-entropySent(get_nrc_sentiment(s05e02texto))
+s05e03Hsent<-entropySent(get_nrc_sentiment(s05e03texto))
+s05e04Hsent<-entropySent(get_nrc_sentiment(s05e04texto))
+s05e05Hsent<-entropySent(get_nrc_sentiment(s05e05texto))
+s05e06Hsent<-entropySent(get_nrc_sentiment(s05e06texto))
+s05e07Hsent<-entropySent(get_nrc_sentiment(s05e07texto))
+s05e08Hsent<-entropySent(get_nrc_sentiment(s05e08texto))
+s05e09Hsent<-entropySent(get_nrc_sentiment(s05e09texto))
+s05e10Hsent<-entropySent(get_nrc_sentiment(s05e10texto))
+s05e11Hsent<-entropySent(get_nrc_sentiment(s05e11texto))
+s05e12Hsent<-entropySent(get_nrc_sentiment(s05e12texto))
+s05e13Hsent<-entropySent(get_nrc_sentiment(s05e13texto))
+s05e14Hsent<-entropySent(get_nrc_sentiment(s05e14texto))
+s05e15Hsent<-entropySent(get_nrc_sentiment(s05e15texto))
+s05e16Hsent<-entropySent(get_nrc_sentiment(s05e16texto))
+s05e17Hsent<-entropySent(get_nrc_sentiment(s05e17texto))
+s05e18Hsent<-entropySent(get_nrc_sentiment(s05e18texto))
+s05e19Hsent<-entropySent(get_nrc_sentiment(s05e19texto))
+s05e20Hsent<-entropySent(get_nrc_sentiment(s05e20texto))
+s05e21Hsent<-entropySent(get_nrc_sentiment(s05e21texto))
+s05e22Hsent<-entropySent(get_nrc_sentiment(s05e22texto))
+s05e23Hsent<-entropySent(get_nrc_sentiment(s05e23texto))
+s05e24Hsent<-entropySent(get_nrc_sentiment(s05e24texto))
+
+s05meanH<- cbind(mean(s05e01Hsent),mean(s05e02Hsent),mean(s05e03Hsent),mean(s05e04Hsent),mean(s05e05Hsent),mean(s05e06Hsent),mean(s05e07Hsent),mean(s05e08Hsent),mean(s05e09Hsent),mean(s05e10Hsent),mean(s05e11Hsent),mean(s05e12Hsent),mean(s05e13Hsent),mean(s05e14Hsent),mean(s05e15Hsent),mean(s05e16Hsent),mean(s05e17Hsent),mean(s05e18Hsent),mean(s05e19Hsent),mean(s05e20Hsent),mean(s05e21Hsent),mean(s05e22Hsent),mean(s05e23Hsent),mean(s05e24Hsent))
+
+
+s05e01EvolutionH<-data.frame(linenumberPercent = 100*s05e01nrc$linenumber/max(s05e01nrc$linenumber),s05e01Hsent)
+s05e02EvolutionH<-data.frame(linenumberPercent = 100*s05e02nrc$linenumber/max(s05e02nrc$linenumber),s05e02Hsent)
+s05e03EvolutionH<-data.frame(linenumberPercent = 100*s05e03nrc$linenumber/max(s05e03nrc$linenumber),s05e03Hsent)
+s05e04EvolutionH<-data.frame(linenumberPercent = 100*s05e04nrc$linenumber/max(s05e04nrc$linenumber),s05e04Hsent)
+s05e05EvolutionH<-data.frame(linenumberPercent = 100*s05e05nrc$linenumber/max(s05e05nrc$linenumber),s05e05Hsent)
+s05e06EvolutionH<-data.frame(linenumberPercent = 100*s05e06nrc$linenumber/max(s05e06nrc$linenumber),s05e06Hsent)
+s05e07EvolutionH<-data.frame(linenumberPercent = 100*s05e07nrc$linenumber/max(s05e07nrc$linenumber),s05e07Hsent)
+s05e08EvolutionH<-data.frame(linenumberPercent = 100*s05e08nrc$linenumber/max(s05e08nrc$linenumber),s05e08Hsent)
+s05e09EvolutionH<-data.frame(linenumberPercent = 100*s05e09nrc$linenumber/max(s05e09nrc$linenumber),s05e09Hsent)
+s05e10EvolutionH<-data.frame(linenumberPercent = 100*s05e10nrc$linenumber/max(s05e10nrc$linenumber),s05e10Hsent)
+s05e11EvolutionH<-data.frame(linenumberPercent = 100*s05e11nrc$linenumber/max(s05e11nrc$linenumber),s05e11Hsent)
+s05e12EvolutionH<-data.frame(linenumberPercent = 100*s05e12nrc$linenumber/max(s05e12nrc$linenumber),s05e12Hsent)
+s05e13EvolutionH<-data.frame(linenumberPercent = 100*s05e13nrc$linenumber/max(s05e13nrc$linenumber),s05e13Hsent)
+s05e14EvolutionH<-data.frame(linenumberPercent = 100*s05e14nrc$linenumber/max(s05e14nrc$linenumber),s05e14Hsent)
+s05e15EvolutionH<-data.frame(linenumberPercent = 100*s05e15nrc$linenumber/max(s05e15nrc$linenumber),s05e15Hsent)
+s05e16EvolutionH<-data.frame(linenumberPercent = 100*s05e16nrc$linenumber/max(s05e16nrc$linenumber),s05e16Hsent)
+s05e17EvolutionH<-data.frame(linenumberPercent = 100*s05e17nrc$linenumber/max(s05e17nrc$linenumber),s05e17Hsent)
+s05e18EvolutionH<-data.frame(linenumberPercent = 100*s05e18nrc$linenumber/max(s05e18nrc$linenumber),s05e18Hsent)
+s05e19EvolutionH<-data.frame(linenumberPercent = 100*s05e19nrc$linenumber/max(s05e19nrc$linenumber),s05e19Hsent)
+s05e20EvolutionH<-data.frame(linenumberPercent = 100*s05e20nrc$linenumber/max(s05e20nrc$linenumber),s05e20Hsent)
+s05e21EvolutionH<-data.frame(linenumberPercent = 100*s05e21nrc$linenumber/max(s05e21nrc$linenumber),s05e21Hsent)
+s05e22EvolutionH<-data.frame(linenumberPercent = 100*s05e22nrc$linenumber/max(s05e22nrc$linenumber),s05e22Hsent)
+s05e23EvolutionH<-data.frame(linenumberPercent = 100*s05e23nrc$linenumber/max(s05e23nrc$linenumber),s05e23Hsent)
+s05e24EvolutionH<-data.frame(linenumberPercent = 100*s05e24nrc$linenumber/max(s05e24nrc$linenumber),s05e24Hsent)
 
 s05texto <- c("s05e01", s05e01texto, "s05e02", s05e02texto, "s05e03", s05e03texto, "s05e04", s05e04texto, "s05e05", s05e05texto, "s05e06", s05e06texto, "s05e07", s05e07texto, "s05e08", s05e08texto, "s05e09", s05e09texto, "s05e10", s05e10texto, "s05e11", s05e11texto, "s05e12", s05e12texto, "s05e13", s05e13texto, "s05e14", s05e14texto, "s05e15", s05e15texto, "s05e16", s05e16texto, "s05e17", s05e17texto, "s05e18", s05e18texto, "s05e19", s05e19texto, "s05e20", s05e20texto, "s05e21", s05e21texto, "s05e22", s05e22texto, "s05e23", s05e23texto, "s05e24", s05e24texto)
 s05nrc <- cbind(linenumber = seq_along(s05texto), get_nrc_sentiment(s05texto))
