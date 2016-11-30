@@ -372,7 +372,10 @@ s01_H <- ggplot(data = s01ftH, aes(x = linenumber, y = ft)) +
                arrow = arrow(length = unit(0.05, "npc")), inherit.aes = FALSE)
 
 
-
+s01frequency<-length(s01EvolutionH$s01Hsent)/24
+s01ts<-ts(s01EvolutionH$s01Hsent,frequency=s01frequency)
+s01decompose<-decompose(s01ts)
+plot(s01decompose)
 
 
 
@@ -1107,7 +1110,10 @@ s03_H <- ggplot(data = s03ftH, aes(x = linenumber, y = ft)) +
 
 
 
-
+s03frequency<-length(s03EvolutionH$s03Hsent)/25
+s03ts<-ts(s03EvolutionH$s03Hsent,frequency=s03frequency)
+s03decompose<-decompose(s03ts)
+plot(s03decompose)
 
 
 
